@@ -379,16 +379,18 @@ ui =
                             (\index ->
                                 Collage.circle (progress * (100 + (index |> Basics.toFloat) * 40))
                                     |> Collage.outlined
-                                        (Collage.solid (25 + progress * 40)
+                                        (Collage.solid (35 + progress * 50)
                                             (Collage.uniform
                                                 (Color.rgba
-                                                    (0.4 + 0.1 * (1 - progress))
-                                                    (0.5 + 0.1 * (1 - progress))
-                                                    (0.7 + 0.2 * (1 - progress))
-                                                    ((1 - progress) * 0.4)
+                                                    0.55
+                                                    0.7
+                                                    1
+                                                    ((1 - progress) * 0.6)
                                                 )
                                             )
                                         )
+                                    |> Collage.scaleY 0.3
+                                    |> Collage.shiftY -300
                             )
                         |> (if progress > 0.3 then
                                 (::) (dropletSplashWide (0.2 + progress * 1.1))
@@ -415,15 +417,17 @@ ui =
                                         (Collage.solid (25 + progress * 30)
                                             (Collage.uniform
                                                 (Color.rgba
-                                                    (0.4 + 0.1 * (1 - progress))
-                                                    (0.5 + 0.1 * (1 - progress))
-                                                    (0.7 + 0.2 * (1 - progress))
-                                                    ((1 - progress) * 0.3)
+                                                    0.55
+                                                    0.7
+                                                    1
+                                                    ((1 - progress) * 0.5)
                                                 )
                                             )
                                         )
                             )
                     )
+                    |> Collage.scaleY 0.3
+                    |> Collage.shiftY -300
 
             withSquaredOutProgress collage progress =
                 collage (progress ^ 2)
@@ -432,93 +436,269 @@ ui =
                 collage (progress ^ 0.5)
 
             wave progress =
+                waveWith { width = 160, color = Color.rgba 1 1 1 0.2 } progress
+
+            waveWith config progress =
                 List.range -20 20
                     |> List.map
                         (\x ->
-                            ( (x |> Basics.toFloat) * 50, sin ((x |> Basics.toFloat) / 2 + progress * 10) * 50 )
+                            ( (x |> Basics.toFloat) * 35, sin ((x |> Basics.toFloat) / 2 + progress * 10) * 35 )
                         )
                     |> Collage.path
-                    |> Collage.traced (Collage.solid 160 (Collage.uniform (Color.rgba 1 1 1 0.03)))
+                    |> Collage.traced (Collage.solid config.width (Collage.uniform config.color))
         in
         Collage.Render.svgBox ( state.windowSize.width, state.windowSize.height )
             (Collage.Layout.stack
-                [ Collage.Layout.stack
-                    [ animateLoop (Duration.seconds 10)
+                [ animateLoop (Duration.seconds 13)
+                    wave
+                    |> Collage.shift ( 0, 540 )
+                    |> Collage.scaleX 1.5
+                , Collage.Layout.stack
+                    [ Collage.Layout.stack
+                        [ animateLoop (Duration.seconds 7)
+                            (waveWith { width = 70, color = Color.rgba 0.15 0.5 1 0.6 })
+                        , animateLoop (Duration.seconds 7.6)
+                            (withInvertedProgress (waveWith { width = 90, color = Color.rgba 0 0.55 1 0.6 }))
+                            |> Collage.shift ( 100, -310 )
+                        , animateLoop (Duration.seconds 9)
+                            (waveWith { width = 90, color = Color.rgba 0.4 0.85 1 0.6 })
+                            |> Collage.shift ( 50, 330 )
+                        , animateLoop (Duration.seconds 6.7)
+                            (waveWith { width = 90, color = Color.rgba 0.4 0.7 1 0.6 })
+                            |> Collage.shift ( 60, -140 )
+                        , animateLoop (Duration.seconds 4.9)
+                            (waveWith { width = 90, color = Color.rgba 0.4 0.75 1 0.6 })
+                            |> Collage.shift ( 0, 210 )
+                        , animateLoop (Duration.seconds 9.8)
+                            (withInvertedProgress (waveWith { width = 90, color = Color.rgba 0 0.55 1 0.6 }))
+                            |> Collage.shift ( 20, 440 )
+                        , animateLoop (Duration.seconds 5.5)
+                            (waveWith { width = 90, color = Color.rgba 0.15 0.65 1 0.6 })
+                            |> Collage.shift ( 20, -500 )
+                        , animateLoop (Duration.seconds 10)
+                            (withInvertedProgress (waveWith { width = 90, color = Color.rgba 0 0.55 1 0.6 }))
+                            |> Collage.shift ( 50, 570 )
+                        , animateLoop (Duration.seconds 8)
+                            (withInvertedProgress (waveWith { width = 90, color = Color.rgba 0 0.55 1 0.6 }))
+                            |> Collage.shift ( 0, -780 )
+                        , animateLoop (Duration.seconds 10)
+                            (waveWith { width = 90, color = Color.rgba 0.3 0.79 1 0.6 })
+                            |> Collage.shift ( 40, 750 )
+                        , animateLoop (Duration.seconds 4.7)
+                            (waveWith { width = 90, color = Color.rgba 0.3 0.8 1 0.6 })
+                            |> Collage.shift ( 0, -800 )
+                        , animateLoop (Duration.seconds 7)
+                            (waveWith { width = 90, color = Color.rgba 0.35 0.65 1 0.6 })
+                            |> Collage.shift ( 80, 870 )
+                        , animateLoop (Duration.seconds 6)
+                            (waveWith { width = 90, color = Color.rgba 0.45 0.7 1 0.6 })
+                            |> Collage.shift ( 30, -900 )
+                        , animateLoop (Duration.seconds 6.5)
+                            (waveWith { width = 90, color = Color.rgba 0.45 0.8 1 0.6 })
+                        ]
+                        |> Collage.shift ( -200, 200 )
+                    , animateLoop (Duration.seconds 10)
                         wave
-                    , animateLoop (Duration.seconds 8)
+                    , animateLoop (Duration.seconds 7.6)
                         (withInvertedProgress wave)
-                        |> Collage.shift ( 0, -300 )
-                    , animateLoop (Duration.seconds 12)
+                        |> Collage.shift ( -50, -300 )
+                    , animateLoop (Duration.seconds 13)
+                        wave
+                        |> Collage.shift ( -70, 300 )
+                    , animateLoop (Duration.seconds 8.7)
+                        wave
+                        |> Collage.shift ( -80, -170 )
+                    , animateLoop (Duration.seconds 5.9)
+                        wave
+                        |> Collage.shift ( -20, 190 )
+                    , animateLoop (Duration.seconds 12.8)
                         (withInvertedProgress wave)
                         |> Collage.shift ( 0, 460 )
                     , animateLoop (Duration.seconds 6.5)
                         wave
-                        |> Collage.shift ( 0, -460 )
+                        |> Collage.shift ( -10, -460 )
                     , animateLoop (Duration.seconds 12)
                         (withInvertedProgress wave)
                         |> Collage.shift ( 0, 560 )
                     , animateLoop (Duration.seconds 10)
                         (withInvertedProgress wave)
                         |> Collage.shift ( 0, -700 )
-                    , animateLoop (Duration.seconds 13)
+                    , animateLoop (Duration.seconds 7.6)
+                        (withInvertedProgress (waveWith { width = 90, color = Color.rgb 0 0.55 1 }))
+                        |> Collage.shift ( 0, -310 )
+                    , animateLoop (Duration.seconds 9)
+                        (waveWith { width = 90, color = Color.rgb 0 0.55 1 })
+                        |> Collage.shift ( -100, 330 )
+                    , animateLoop (Duration.seconds 6.7)
+                        (waveWith { width = 90, color = Color.rgb 0.2 0.5 1 })
+                        |> Collage.shift ( 0, -140 )
+                    , animateLoop (Duration.seconds 4.9)
+                        (waveWith { width = 90, color = Color.rgb 0.1 0.4 1 })
+                        |> Collage.shift ( -120, 210 )
+                    , animateLoop (Duration.seconds 9.8)
+                        (withInvertedProgress (waveWith { width = 90, color = Color.rgb 0 0.55 1 }))
+                        |> Collage.shift ( 0, 440 )
+                    , animateLoop (Duration.seconds 5.5)
+                        (waveWith { width = 90, color = Color.rgb 0.15 0.45 1 })
+                        |> Collage.shift ( 0, -500 )
+                    , animateLoop (Duration.seconds 10)
+                        (withInvertedProgress (waveWith { width = 90, color = Color.rgb 0 0.55 1 }))
+                        |> Collage.shift ( -100, 570 )
+                    , animateLoop (Duration.seconds 8)
+                        (withInvertedProgress (waveWith { width = 90, color = Color.rgb 0 0.55 1 }))
+                        |> Collage.shift ( 0, -780 )
+                    , animateLoop (Duration.seconds 10)
+                        (waveWith { width = 90, color = Color.rgb 0 0.55 1 })
+                        |> Collage.shift ( 0, 750 )
+                    , animateLoop (Duration.seconds 4.7)
+                        (waveWith { width = 90, color = Color.rgb 0 0.55 1 })
+                        |> Collage.shift ( 0, -800 )
+                    , animateLoop (Duration.seconds 7)
+                        (waveWith { width = 90, color = Color.rgb 0.1 0.5 1 })
+                        |> Collage.shift ( 0, 870 )
+                    , animateLoop (Duration.seconds 6)
+                        (waveWith { width = 90, color = Color.rgb 0.15 0.45 1 })
+                        |> Collage.shift ( -90, -900 )
+                    , animateLoop (Duration.seconds 6.5)
+                        (waveWith { width = 90, color = Color.rgb 0.2 0.5 1 })
+                    , animateLoop (Duration.seconds 12)
                         wave
-                        |> Collage.shift ( 0, 300 )
-                    , animate { start = Duration.seconds 0, duration = Duration.seconds 6.5 }
-                        (withInvertedProgress (withSquaredOutProgress dropletSplashWide))
-                        |> Collage.shift ( -200, 0 )
-                    , animate { start = Duration.seconds 0, duration = Duration.seconds 6.5 }
-                        (withInvertedProgress (withSquaredOutProgress dropletSplashWide))
-                        |> Collage.shift ( 200, 0 )
-                    , animate { start = Duration.seconds 6.5, duration = Duration.seconds 7 }
-                        (withSquaredInProgress dropletSplashWide)
-                        |> Collage.shift ( -200, 0 )
-                    , animate { start = Duration.seconds 6.5, duration = Duration.seconds 7 }
-                        (withSquaredInProgress dropletSplashWide)
-                        |> Collage.shift ( 200, 0 )
-                    , animate { start = Duration.seconds 7, duration = Duration.seconds 11 }
-                        dropletSplash
-                        |> Collage.shift ( 0, 0 )
-                    , animate { start = Duration.seconds 7.4, duration = Duration.seconds 13 }
-                        dropletSplash
-                        |> Collage.shift ( 400, 0 )
-                    , animate { start = Duration.seconds 13, duration = Duration.seconds 8 }
-                        dropletSplash
-                        |> Collage.shift ( -400, -130 )
-                    , animate { start = Duration.seconds 20, duration = Duration.seconds 5 }
-                        dropletSplash
-                        |> Collage.shift ( 0, 0 )
-                    , animate { start = Duration.seconds 21, duration = Duration.seconds 5 }
-                        dropletSplash
-                        |> Collage.shift ( -300, -100 )
-                    , animate { start = Duration.seconds 22, duration = Duration.seconds 5 }
-                        dropletSplash
-                        |> Collage.shift ( 300, 100 )
-                    , animate { start = Duration.seconds 23, duration = Duration.seconds 5 }
-                        dropletSplash
-                        |> Collage.shift ( 0, 0 )
-                    , animate { start = Duration.seconds 23, duration = Duration.seconds 7 }
-                        (withInvertedProgress dropletSplashWide)
-                        |> Collage.shift ( -200, 0 )
-                    , animate { start = Duration.seconds 23, duration = Duration.seconds 7 }
-                        (withInvertedProgress dropletSplashWide)
-                        |> Collage.shift ( 200, 0 )
-                    , animate { start = Duration.seconds 30, duration = Duration.seconds 7 }
-                        dropletSplashWide
-                        |> Collage.shift ( -200, 0 )
-                    , animate { start = Duration.seconds 30, duration = Duration.seconds 7 }
-                        dropletSplashWide
-                        |> Collage.shift ( 200, 0 )
-                    , animate { start = Duration.seconds 30.2, duration = Duration.seconds 5 }
-                        dropletSplash
-                        |> Collage.shift ( -250, -200 )
-                    , animate { start = Duration.seconds 30.5, duration = Duration.seconds 9 }
-                        dropletSplash
-                        |> Collage.shift ( 200, 250 )
+                        |> Collage.shift ( 0, 700 )
+                    , animateLoop (Duration.seconds 9.7)
+                        wave
+                        |> Collage.shift ( -80, -800 )
+                    , animateLoop (Duration.seconds 7)
+                        wave
+                        |> Collage.shift ( 0, 820 )
+                    , animateLoop (Duration.seconds 6)
+                        wave
+                        |> Collage.shift ( 0, -920 )
+                    , animateLoop (Duration.seconds 10)
+                        wave
                     ]
                     |> (\stack ->
-                            animateLoop (Duration.seconds 17)
-                                (\progress -> stack |> Collage.rotate (Basics.turns (Basics.sin (progress * 0.5) * 0.18)))
+                            animateLoop (Duration.seconds 8)
+                                (\progress ->
+                                    stack
+                                        |> Collage.rotate
+                                            (Basics.turns (0.21 + Basics.sin (progress * 0.5) * 0.03))
+                                )
                        )
+                    |> Collage.shift ( 0, 500 )
+                    |> Collage.scaleX 1.2
+
+                --|> (\_ -> Collage.Text.empty |> Collage.rendered)
+                , animate { start = Duration.seconds 0, duration = Duration.seconds 6.5 }
+                    (withInvertedProgress (withSquaredOutProgress dropletSplashWide))
+                    |> Collage.shift ( -200, 0 )
+                , animate { start = Duration.seconds 0, duration = Duration.seconds 6.5 }
+                    (withInvertedProgress (withSquaredOutProgress dropletSplashWide))
+                    |> Collage.shift ( 200, 0 )
+                , animate { start = Duration.seconds 6.5, duration = Duration.seconds 7 }
+                    (withSquaredInProgress dropletSplashWide)
+                    |> Collage.shift ( -200, 0 )
+                , animate { start = Duration.seconds 6.5, duration = Duration.seconds 7 }
+                    (withSquaredInProgress dropletSplashWide)
+                    |> Collage.shift ( 200, 0 )
+                , animate { start = Duration.seconds 7, duration = Duration.seconds 11 }
+                    dropletSplash
+                    |> Collage.shift ( 0, 0 )
+                , animate { start = Duration.seconds 7.4, duration = Duration.seconds 13 }
+                    dropletSplash
+                    |> Collage.shift ( 400, 0 )
+                , animate { start = Duration.seconds 13, duration = Duration.seconds 8 }
+                    dropletSplash
+                    |> Collage.shift ( -400, -130 )
+                , animate { start = Duration.seconds 20, duration = Duration.seconds 5 }
+                    dropletSplash
+                    |> Collage.shift ( 0, 0 )
+                , animate { start = Duration.seconds 21, duration = Duration.seconds 5 }
+                    dropletSplash
+                    |> Collage.shift ( -300, -100 )
+                , animate { start = Duration.seconds 22, duration = Duration.seconds 5 }
+                    dropletSplash
+                    |> Collage.shift ( 300, 100 )
+                , animate { start = Duration.seconds 23, duration = Duration.seconds 5 }
+                    dropletSplash
+                    |> Collage.shift ( 0, 0 )
+                , animate { start = Duration.seconds 23, duration = Duration.seconds 7 }
+                    (withInvertedProgress dropletSplashWide)
+                    |> Collage.shift ( -200, 0 )
+                , animate { start = Duration.seconds 23, duration = Duration.seconds 7 }
+                    (withInvertedProgress dropletSplashWide)
+                    |> Collage.shift ( 200, 0 )
+                , animate { start = Duration.seconds 30, duration = Duration.seconds 7 }
+                    dropletSplashWide
+                    |> Collage.shift ( -200, 0 )
+                , animate { start = Duration.seconds 30, duration = Duration.seconds 7 }
+                    dropletSplashWide
+                    |> Collage.shift ( 200, 0 )
+                , animate { start = Duration.seconds 30.2, duration = Duration.seconds 5 }
+                    dropletSplash
+                    |> Collage.shift ( -250, -200 )
+                , animate { start = Duration.seconds 30.5, duration = Duration.seconds 9 }
+                    dropletSplash
+                    |> Collage.shift ( 200, 250 )
+                , Collage.Layout.stack
+                    [ animateLoop (Duration.seconds 7)
+                        (waveWith { width = 70, color = Color.rgb 0.15 0.5 0.6 })
+                    , animateLoop (Duration.seconds 7.6)
+                        (withInvertedProgress (waveWith { width = 90, color = Color.rgb 0 0.55 0.6 }))
+                        |> Collage.shift ( 0, -310 )
+                    , animateLoop (Duration.seconds 9)
+                        (waveWith { width = 90, color = Color.rgb 0 0.75 0.6 })
+                        |> Collage.shift ( 0, 330 )
+                    , animateLoop (Duration.seconds 6.7)
+                        (waveWith { width = 90, color = Color.rgb 0.2 0.65 0.6 })
+                        |> Collage.shift ( 0, -140 )
+                    , animateLoop (Duration.seconds 4.9)
+                        (waveWith { width = 90, color = Color.rgb 0.1 0.7 0.6 })
+                        |> Collage.shift ( 0, 210 )
+                    , animateLoop (Duration.seconds 9.8)
+                        (withInvertedProgress (waveWith { width = 90, color = Color.rgb 0 0.55 0.6 }))
+                        |> Collage.shift ( 0, 440 )
+                    , animateLoop (Duration.seconds 5.5)
+                        (waveWith { width = 90, color = Color.rgb 0.15 0.65 0.6 })
+                        |> Collage.shift ( 0, -500 )
+                    , animateLoop (Duration.seconds 10)
+                        (withInvertedProgress (waveWith { width = 90, color = Color.rgb 0 0.55 0.6 }))
+                        |> Collage.shift ( 0, 570 )
+                    , animateLoop (Duration.seconds 8)
+                        (withInvertedProgress (waveWith { width = 90, color = Color.rgb 0 0.55 0.6 }))
+                        |> Collage.shift ( 0, -780 )
+                    , animateLoop (Duration.seconds 10)
+                        (waveWith { width = 90, color = Color.rgb 0 0.7 0.6 })
+                        |> Collage.shift ( 0, 750 )
+                    , animateLoop (Duration.seconds 4.7)
+                        (waveWith { width = 90, color = Color.rgb 0 0.65 0.6 })
+                        |> Collage.shift ( 0, -800 )
+                    , animateLoop (Duration.seconds 7)
+                        (waveWith { width = 90, color = Color.rgb 0.1 0.65 0.6 })
+                        |> Collage.shift ( 0, 870 )
+                    , animateLoop (Duration.seconds 6)
+                        (waveWith { width = 90, color = Color.rgb 0.15 0.6 0.6 })
+                        |> Collage.shift ( 0, -900 )
+                    , animateLoop (Duration.seconds 6.5)
+                        (waveWith { width = 90, color = Color.rgb 0.3 0.6 0.6 })
+                    , animateLoop (Duration.seconds 6.5)
+                        (waveWith { width = 900, color = Color.rgb 0.4 0.73 0.5 })
+                        |> Collage.shift ( 0, -400 )
+                    , animateLoop (Duration.seconds 4.5)
+                        (waveWith { width = 900, color = Color.rgb 0.3 0.9 0.6 })
+                        |> Collage.shift ( 0, 400 )
+                    ]
+                    |> Collage.shift ( -240, -300 )
+                    |> Collage.scaleY 0.2
+                    |> Collage.scaleX 2
+                , animateLoop (Duration.seconds 7.6)
+                    (withInvertedProgress (waveWith { color = Color.rgb 0.35 0.45 1, width = 460 }))
+                    |> Collage.shift ( -40, -800 )
+                , animateLoop (Duration.seconds 7.6)
+                    (withInvertedProgress (waveWith { color = Color.rgb 0.3 0.5 1, width = 400 }))
+                    |> Collage.shift ( 0, -300 )
+                , animateLoop (Duration.seconds 12.8)
+                    (withInvertedProgress (waveWith { color = Color.rgb 0.1 0.4 1, width = 400 }))
+                    |> Collage.shift ( -20, 50 )
                 , Collage.rectangle state.windowSize.width state.windowSize.height
                     |> Collage.filled (Collage.uniform (Color.rgb 0.2 0.4 0.9))
                 ]
