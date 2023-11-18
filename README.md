@@ -1,10 +1,8 @@
-## mirror blossom
+## under the rain 🌱
 
-🌱 Grow a plant by redirecting incoming light with its mirrors-blossoms 🌼.
+Simple animation, built using [elm](https://elm-lang.org/) for a 2h art jam.
 
-Simplistic game, built using [elm](https://elm-lang.org/) for the [gmtk jam 2023](https://itch.io/jam/gmtk-2023).
-
-→ [play online](https://lue-bird.github.io/gmtk-2023/)
+→ [(laggy) website](https://lue-bird.github.io/under-the-rain/)
 
 ### run locally
 ```noformatingples
